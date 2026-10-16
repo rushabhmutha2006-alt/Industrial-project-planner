@@ -1,0 +1,6 @@
+{
+  "name": "Industrial Visit Planner",
+  "description": "Full-stack platform for colleges, faculty, and engineering students to discover industries, plan itineraries with Gemini AI, manage student registrations, track budgets, and streamline approvals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

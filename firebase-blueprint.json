@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "System user with role-based access for Faculty, Student, or Administrator",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["admin", "faculty", "student"] },
+        "department": { "type": "string", "maxLength": 128 },
+        "rollNumber": { "type": "string", "maxLength": 64 },
+        "collegeName": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "displayName"]
+    },
+    "companies": {
+      "title": "Company",
+      "description": "Industrial organization or enterprise in the company directory",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 128 },
+        "sector": { "type": "string", "maxLength": 64 },
+        "location": { "type": "string", "maxLength": 128 },
+        "address": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 1024 },
+        "capacity": { "type": "integer" },
+        "contactEmail": { "type": "string", "maxLength": 128 },
+        "website": { "type": "string", "maxLength": 256 },
+        "bookingStatus": { "type": "string", "enum": ["Open for Visits", "Advance Notice Required", "Restricted Access"] },
+        "isDemo": { "type": "boolean" }
+      },
+      "required": ["id", "name", "sector", "location", "bookingStatus"]
+    },
+    "visits": {
+      "title": "IndustrialVisit",
+      "description": "Scheduled or proposed industrial visit itinerary and management record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "companyName": { "type": "string", "maxLength": 128 },
+        "department": { "type": "string", "maxLength": 64 },
+        "semester": { "type": "string", "maxLength": 32 },
+        "visitDate": { "type": "string", "maxLength": 32 },
+        "returnDate": { "type": "string", "maxLength": 32 },
+        "departureTime": { "type": "string", "maxLength": 32 },
+        "returnTime": { "type": "string", "maxLength": 32 },
+        "assemblyPoint": { "type": "string", "maxLength": 128 },
+        "studentCapacity": { "type": "integer" },
+        "registeredCount": { "type": "integer" },
+        "registrationDeadline": { "type": "string", "maxLength": 32 },
+        "status": {
+          "type": "string",
+          "enum": ["Draft", "Pending Approval", "Approved", "Confirmed with Company", "Completed", "Cancelled"]
+        },
+        "facultyCoordinatorId": { "type": "string", "maxLength": 128 },
+        "facultyCoordinatorName": { "type": "string", "maxLength": 128 },
+        "estimatedBudgetPerStudent": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "companyName", "department", "visitDate", "status"]
+    },
+    "registrations": {
+      "title": "StudentRegistration",
+      "description": "Student registration entry for an industrial visit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "visitId": { "type": "string", "maxLength": 64 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "rollNumber": { "type": "string", "maxLength": 64 },
+        "department": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["Confirmed", "Waitlisted", "Attended", "Absent", "Cancelled"] },
+        "registeredAt": { "type": "string" }
+      },
+      "required": ["id", "visitId", "studentId", "studentName", "status"]
+    },
+    "approvals": {
+      "title": "ApprovalRequest",
+      "description": "Administrative approval review for industrial visits",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "visitId": { "type": "string", "maxLength": 64 },
+        "visitTitle": { "type": "string", "maxLength": 256 },
+        "facultyId": { "type": "string", "maxLength": 128 },
+        "facultyName": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "submittedAt": { "type": "string" },
+        "reviewedAt": { "type": "string" },
+        "reviewedBy": { "type": "string", "maxLength": 128 },
+        "remarks": { "type": "string", "maxLength": 512 }
+      },
+      "required": ["id", "visitId", "status", "submittedAt"]
+    },
+    "notifications": {
+      "title": "Notification",
+      "description": "System event notification sent to users or roles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "recipientRole": { "type": "string", "enum": ["all", "admin", "faculty", "student"] },
+        "recipientId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "maxLength": 512 },
+        "type": { "type": "string", "enum": ["approval", "registration", "reminder", "general"] },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "message", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/users" },
+      "description": "Stores user profiles with role-based attributes"
+    },
+    "/companies/{companyId}": {
+      "schema": { "$ref": "#/entities/companies" },
+      "description": "Directory of industries and host organizations"
+    },
+    "/visits/{visitId}": {
+      "schema": { "$ref": "#/entities/visits" },
+      "description": "Industrial visits proposed and managed by faculty"
+    },
+    "/visits/{visitId}/registrations/{registrationId}": {
+      "schema": { "$ref": "#/entities/registrations" },
+      "description": "Student registrations associated with a specific visit"
+    },
+    "/approvals/{approvalId}": {
+      "schema": { "$ref": "#/entities/approvals" },
+      "description": "Administrative approval requests and audit trail"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/notifications" },
+      "description": "In-app system notifications"
+    }
+  }
+}
